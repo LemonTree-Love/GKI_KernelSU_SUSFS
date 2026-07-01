@@ -40,6 +40,10 @@ on:
         required: false
         type: string
         default: "Sun Dec 01 08:10:00 UTC 2024"
+      page_size:
+        required: false
+        type: string
+        default: "4K"
 
       # ==================== 功能开关 ====================
       use_zram:
@@ -101,6 +105,7 @@ jobs:
           echo "KPM 功能      : ${{ inputs.use_kpm }}"
           echo "Re-Kernel     : ${{ inputs.use_rekernel }}"
           echo "Droidspaces   : ${{ inputs.droidspaces }}"
+          echo "Page size     : ${{ inputs.page_size }}"
           echo "Stock Config  : 自动检测 config/stock_defconfig"
           echo "========================================"
 
@@ -1138,6 +1143,27 @@ jobs:
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
           EOF
+
+          case "${{ inputs.page_size }}" in
+            "16K")
+              cat >> "$DEFCONFIG" << 'EOF'
+          # CONFIG_ARM64_4K_PAGES is not set
+          CONFIG_ARM64_16K_PAGES=y
+          # CONFIG_ARM64_64K_PAGES is not set
+          EOF
+              ;;
+            "4K"|"")
+              cat >> "$DEFCONFIG" << 'EOF'
+          CONFIG_ARM64_4K_PAGES=y
+          # CONFIG_ARM64_16K_PAGES is not set
+          # CONFIG_ARM64_64K_PAGES is not set
+          EOF
+              ;;
+            *)
+              echo "::error::Unsupported page_size: ${{ inputs.page_size }}"
+              exit 1
+              ;;
+          esac
 
           if [ "${{ inputs.ksu_variant }}" == "SukiSU" ] || [ "${{ inputs.ksu_variant }}" == "ReSukiSU" ] || [ "${{ inputs.ksu_variant }}" == "KittiSU" ] || [ "${{ inputs.ksu_variant }}" == "Next" ]; then
             if [ "${{ inputs.ksu_variant }}" == "ReSukiSU" ]; then
