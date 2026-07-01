@@ -1232,8 +1232,8 @@ jobs:
             else
               echo "保留 GKI protected_exports_list，避免官方 vendor 模块触发 protected symbol 拒载"
               if [ -f ./common/android/abi_gki_protected_exports_aarch64 ]; then
-                sed -i '/^arc4_crypt$/d' ./common/android/abi_gki_protected_exports_aarch64
-                echo "已从 protected exports 移除 arc4_crypt，允许 Pixel 16K 官方 libarc4.ko 加载"
+                sed -i -e '/^arc4_crypt$/d' -e '/^arc4_setkey$/d' ./common/android/abi_gki_protected_exports_aarch64
+                echo "已从 protected exports 移除 libarc4 相关符号，允许 Pixel 16K 官方 libarc4.ko 加载"
               fi
             fi
             sed -i '/kmi_symbol_list_strict_mode/d' ./common/BUILD.bazel
