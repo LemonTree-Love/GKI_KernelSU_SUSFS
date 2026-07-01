@@ -86,6 +86,11 @@ on:
           - "4K"
           - "16K"
         default: "4K"
+      preserve_protected_exports:
+        description: "保留 GKI protected exports，Pixel 官方 vendor 模块建议开启"
+        required: true
+        type: boolean
+        default: false
 
       # ==================== 选项配置 ====================
       use_kpm:
@@ -151,6 +156,7 @@ jobs:
       version: ${{ inputs.version || '' }}
       build_time: ${{ inputs.build_time || '' }}
       page_size: ${{ inputs.page_size || '4K' }}
+      preserve_protected_exports: ${{ inputs.preserve_protected_exports }}
       use_zram: ${{ inputs.use_zram }}
       use_bbg: ${{ inputs.use_bbg }}
       use_kpm: ${{ inputs.use_kpm }}
